@@ -5,14 +5,14 @@ on:
     tags:
       - '*'
 
-env:
-  TARGET_DISTRO: ubuntu-20.04
-
 jobs:
   docker:
+    strategy:
+      matrix:
+        TARGET_DISTRO: [ "ubuntu-20.04" ]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/kontextwork/zimbra-builder:${{ env.TARGET_DISTRO }}
+      image: ghcr.io/kontextwork/zimbra-builder:${{ matrix.TARGET_DISTRO }}
     steps:
       - run: |
           mkdir -p /root/.ivy2/cache
@@ -28,7 +28,7 @@ jobs:
           cd /home/git/zimbra-build-scripts/
           ./zimbra-build-helper.sh --build-zimbra
       - run: ls -la /home/git/zimbra/BUILDS
-      - run: mv /home/git/zimbra/BUILDS/UBUNTU20_64*/zcs-*.tgz /home/git/zimbra/BUILDS/zimbra-${{ github.ref_name }}-${{ env.TARGET_DISTRO }}.tgz
+      - run: mv /home/git/zimbra/BUILDS/UBUNTU20_64*/zcs-*.tgz /home/git/zimbra/BUILDS/zimbra-${{ github.ref_name }}-${{ matrix.TARGET_DISTRO }}.tgz
       - name: Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -36,5 +36,5 @@ jobs:
           prerelease: false
           automatic_release_tag: ${{ github.ref_name }}
           files: |
-            /home/git/zimbra/BUILDS/zimbra-${{ github.ref_name }}-${{ env.TARGET_DISTRO }}.tgz
+            /home/git/zimbra/BUILDS/zimbra-${{ github.ref_name }}-${{ matrix.TARGET_DISTRO }}.tgz
 
