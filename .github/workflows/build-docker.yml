@@ -35,7 +35,7 @@ jobs:
           password: ${{ github.token }}
       - name: Get docker tag
         run: |
-          export DISTRO=matrix.TARGET_DISTRO
+          export DISTRO=${{ matrix.TARGET_DISTRO }}
           export TAG=${DISTRO//:/-}
           echo "DOCKER_TAG=${TAG}" >> $GITHUB_ENV
       - name: Build builder
