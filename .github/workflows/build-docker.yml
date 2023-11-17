@@ -5,11 +5,12 @@ on:
 
 env:
   IMAGE_FQDN: ghcr.io/kontextwork/zimbra-builder
-  # actually that's the distro to build ON and FOR
-  TARGET_DISTRO: ubuntu:20.04
 
 jobs:
   docker:
+    strategy:
+      matrix:
+        TARGET_DISTRO: [ "ubuntu:20.04" ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout us
@@ -32,6 +33,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
+      - name: Get docker tag
+        run: |
+          export DISTRO=matrix.TARGET_DISTRO
+          export TAG=${DISTRO//:/-}
+          echo "DOCKER_TAG=${TAG}" >> $GITHUB_ENV
       - name: Build builder
         uses: docker/build-push-action@v3
         with:
@@ -40,6 +46,7 @@ jobs:
           push: true
           build-args: |
             # actually that's the distro to build ON and FOR
-            RELEASE=${{ env.TARGET_DISTRO }}
-          tags: |
+            RELEASE=${{ matrix.TARGET_DISTRO }}
+          tags:
             ${{ env.IMAGE_FQDN }}:latest
+            ${{ env.IMAGE_FQDN }}:${{ env.DOCKER_TAG }}
