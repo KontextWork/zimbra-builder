@@ -47,6 +47,6 @@ jobs:
           build-args: |
             # actually that's the distro to build ON and FOR
             RELEASE=${{ matrix.TARGET_DISTRO }}
-          tags:
+          tags: |
             ${{ env.IMAGE_FQDN }}:latest
             ${{ env.IMAGE_FQDN }}:${{ env.DOCKER_TAG }}
