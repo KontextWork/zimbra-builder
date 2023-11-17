@@ -5,13 +5,23 @@ on:
 
 env:
   IMAGE_FQDN: ghcr.io/kontextwork/zimbra-builder
+  # actually that's the distro to build ON and FOR
+  TARGET_DISTRO: ubuntu:20.04
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout us
+        uses: actions/checkout@v4
+        with:
+          path: builder
+      - name: Checkout zimbra-build-scripts
+        uses: actions/checkout@v4
+        with:
+          repository: ianw1974/zimbra-build-scripts
+          ref: main
+          path: zimbra-build-scripts
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -22,19 +32,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
-      - uses: actions/checkout@master
-        with:
-          name: ianw1974/zimbra-build-scripts
-          token: ${{ secrets.my_pat }}
-          path: zimbra-build-scripts
       - name: Build builder
         uses: docker/build-push-action@v3
         with:
-          context: zimbra-build-scripts/
+          context: zimbra-build-scripts
           platforms: linux/amd64
-          push: false
+          push: true
           build-args: |
             # actually that's the distro to build ON and FOR
-            RELEASE=ubuntu:20.04
+            RELEASE=${{ env.TARGET_DISTRO }}
           tags: |
-            ${{ env.IMAGE_FQDN }}:builder
+            ${{ env.IMAGE_FQDN }}:latest

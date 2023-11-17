@@ -1,0 +1,37 @@
+name: release-zimbra
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/kontextwork/zimbra-builder:latest
+    steps:
+      - run: |
+          mkdir -p /root/.ivy2/cache
+      - run: |
+          set -e
+          mv /home/git/zimbra-build-scripts/config.build.10 /home/git/zimbra-build-scripts/config.build
+          echo "inject zimbra version ${{ github.ref_name }}" 
+          sed -i 's/.*BUILD_RELEASE_NO =.*/BUILD_RELEASE_NO = ${{ github.ref_name }}/' /home/git/zimbra-build-scripts/config.build
+          echo "------ build config ---------"
+          cat /home/git/zimbra-build-scripts/config.build
+      - run: |
+          set -e
+          cd /home/git/zimbra-build-scripts/
+          ./zimbra-build-helper.sh --build-zimbra
+      - run: ls -la /home/git/zimbra/BUILDS
+      - run: mv /home/git/zimbra/BUILDS/UBUNTU20_64*/zcs-*.tgz /home/git/zimbra/BUILDS/zimbra-${{ github.ref_name }}.tgz
+      - name: Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: ${{ github.token }}
+          prerelease: false
+          automatic_release_tag: ${{ github.ref_name }}
+          files: |
+            /home/git/zimbra/BUILDS/zimbra-${{ github.ref_name }}.tgz
+
