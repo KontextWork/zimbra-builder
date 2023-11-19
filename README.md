@@ -2,10 +2,13 @@
 
 Automation of the automation to build zimbra.
 
-Simply uses [ianw1974/zimbra-build-scripts](ianw1974/zimbra-build-scripts) (all the credits to Ian!) to automate a build 
-using github actions. 
+Simply uses [ianw1974/zimbra-build-scripts](ianw1974/zimbra-build-scripts) (all the credits to Ian!) to automate a build
+using github actions. Publishing the build to github releases for direct download. 
 
 Should be an easy starter to automate the builds for all of us. 
+
+Currently builind (can be easily extended, since we use matrix builds)
+- Ubuntu 20.04
 
 What it will be not:
 
