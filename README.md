@@ -2,7 +2,7 @@
 
 Automation of the automation to build zimbra.
 
-Simply uses [ianw1974/zimbra-build-scripts](ianw1974/zimbra-build-scripts) (all the credits to Ian!) to automate a build
+Simply uses [ianw1974/zimbra-build-scripts](https://github.com/ianw1974/zimbra-build-scripts) (all the credits to Ian!) to automate a build
 using github actions. Publishing the build to github releases for direct download. 
 
 Should be an easy starter to automate the builds for all of us. 
